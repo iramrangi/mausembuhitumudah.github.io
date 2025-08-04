@@ -159,9 +159,27 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Enhanced smooth scroll for anchor links
+  // Close mobile menu when any link inside it is clicked
+  if (mobileMenu) {
+    const mobileMenuLinks = mobileMenu.querySelectorAll('a');
+    mobileMenuLinks.forEach(link => {
+      link.addEventListener('click', function() {
+        // Close mobile menu if open
+        if (mobileMenu.classList.contains('open')) {
+          toggleMenu();
+        }
+      });
+    });
+  }
+
+  // Enhanced smooth scroll for anchor links (excluding mobile menu links)
   const anchorLinks = document.querySelectorAll('a[href^="#"]');
   anchorLinks.forEach(link => {
+    // Skip mobile menu links as they have their own onclick handler
+    if (link.closest('#mobile-menu')) {
+      return;
+    }
+    
     link.addEventListener('click', function(e) {
       e.preventDefault();
       const targetID = this.getAttribute('href').substring(1);
@@ -174,6 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
           top: targetPosition,
           behavior: 'smooth'
         });
+        // Remove hash from URL without scrolling
+        history.replaceState(null, '', window.location.pathname + window.location.search);
       }
       // Close mobile menu if open
       if (mobileMenu && mobileMenu.classList.contains('open')) {
